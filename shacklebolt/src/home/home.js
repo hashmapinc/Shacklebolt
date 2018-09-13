@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import './App.css';
 
-class App extends Component {
+class Home extends Component {
   render() {
     return (
-      <div className="App">
+      <div className="Home">
         <header className="App-header">
           <h1 className="App-title">Welcome to Shacklebolt</h1>
         </header>
@@ -13,4 +12,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Home;
