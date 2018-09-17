@@ -4,7 +4,6 @@ all: dev
 dev: 
 	npm start
 
-# deploy the build to s3
-deploy: build 
+# build the app into static files
+build:  
 	npm run build
-	aws s3 cp build s3://shacklebolt.hashmapinc.com --recursive
