@@ -13,7 +13,7 @@ export default class LogoutButton extends Component {
 
     render() {
         return (
-            <Button variant="contained" color="primary" onClick={this.logout}>
+            <Button variant="contained" color="secondary" onClick={this.logout}>
                 Logout
             </Button>
         );
