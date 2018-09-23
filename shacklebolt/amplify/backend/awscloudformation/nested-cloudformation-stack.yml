@@ -134,6 +134,21 @@
 					"authRoleArn": "arn:aws:iam::660239660726:role/shacklebolt-20180917130749-authRole"
 				}
 			}
+		},
+		"storageshackleboltS3": {
+			"Type": "AWS::CloudFormation::Stack",
+			"Properties": {
+				"TemplateURL": "https://s3.amazonaws.com/shacklebolt-20180917130749-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
+				"Parameters": {
+					"bucketName": "shacklebolt-storage",
+					"authPolicyName": "s3_amplify_9a05f9d6",
+					"unauthPolicyName": "s3_amplify_9a05f9d6",
+					"authRoleName": "shacklebolt-20180917130749-authRole",
+					"unauthRoleName": "shacklebolt-20180917130749-unauthRole",
+					"authPermissions": "rw",
+					"unauthPermissions": ""
+				}
+			}
 		}
 	},
 	"Outputs": {

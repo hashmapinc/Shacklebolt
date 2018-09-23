@@ -1,4 +1,4 @@
-import Amplify from 'aws-amplify'; 
+import Amplify, {Auth} from 'aws-amplify'; 
 import aws_exports from './aws-exports';
 
 export default function init() {
@@ -10,6 +10,17 @@ export default function init() {
         Auth: {
             // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
             mandatorySignIn: true,
+        },
+        API: {
+            endpoints: [
+                {
+                    name: "shacklebolt",
+                    endpoint: "https://oy82vobhd6.execute-api.us-east-1.amazonaws.com/dev",
+                    custom_header: async () => {
+                       return { Authorization: (await Auth.currentSession()).idToken.jwtToken }
+                    }
+                }
+            ]
         }
     });
 }

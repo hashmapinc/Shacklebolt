@@ -19,7 +19,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/shacklebolt-20180917130749-deployment/amplify-cfn-templates/hosting/template.json",
 				"logicalId": "hostingS3AndCloudFront"
 			},
-			"lastPushTimeStamp": "2018-09-17T20:32:56.590Z",
+			"lastPushTimeStamp": "2018-09-23T19:54:47.087Z",
 			"output": {
 				"CloudFrontSecureURL": "https://d3czsyusemefrj.cloudfront.net",
 				"S3BucketSecureURL": "https://shacklebolt-20180917143028--hostingbucket.s3.amazonaws.com",
@@ -40,7 +40,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/shacklebolt-20180917130749-deployment/amplify-cfn-templates/auth/shackleboltCognito-cloudformation-template.yml",
 				"logicalId": "authshackleboltCognito"
 			},
-			"lastPushTimeStamp": "2018-09-17T20:32:56.594Z",
+			"lastPushTimeStamp": "2018-09-23T19:54:47.088Z",
 			"output": {
 				"AppClientSecret": "1n6jvjp81voa7ka2sn7bstcf8j59n7me3p5bl469ddflvni1n001",
 				"UserPoolId": "us-east-1_FfH14h8MR",
@@ -51,6 +51,23 @@
 				"UserPoolName": "shacklebolt_userpool"
 			},
 			"lastPushDirHash": "47HujYGlgOwj6Q8SUMRhEC6N9ik="
+		}
+	},
+	"function": {},
+	"storage": {
+		"shackleboltS3": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/shacklebolt-20180917130749-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
+				"logicalId": "storageshackleboltS3"
+			},
+			"lastPushTimeStamp": "2018-09-23T19:54:47.092Z",
+			"output": {
+				"BucketName": "shacklebolt-storage",
+				"Region": "us-east-1"
+			},
+			"lastPushDirHash": "fUKchW/KAwMgsuykRuLgU7+mLR4="
 		}
 	}
 }
