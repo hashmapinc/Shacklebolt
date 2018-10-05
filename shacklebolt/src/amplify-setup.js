@@ -17,7 +17,8 @@ export default function init() {
                     name: "shacklebolt",
                     endpoint: "https://oy82vobhd6.execute-api.us-east-1.amazonaws.com/dev",
                     custom_header: async () => {
-                       return { Authorization: (await Auth.currentSession()).idToken.jwtToken }
+                        let auth = (await Auth.currentSession()).idToken.jwtToken;
+                        return { Authorization: auth}
                     }
                 }
             ]

@@ -4,15 +4,15 @@ import { withAuthenticator } from 'aws-amplify-react';
 import Home from './home/home';
 import Browse from './browse/browse';
 import Upload from './upload/upload';
-import LogoutButton from './components/logout-button';
 import CssBaseline from '@material-ui/core/CssBaseline';
+
+import 'typeface-roboto'
 
 class App extends Component {
     render() {
         return (
             <React.Fragment>
                 <CssBaseline/>
-                <LogoutButton/>
                 <Home/>
                 <br />
                 <br/>
