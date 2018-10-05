@@ -8,6 +8,7 @@ import ENV from '../environment-variables';
 import FileInput from '../components/file-input';
 import TagEditor from './tag-editor';
 import {getDynamoClient} from '../storage/dynamo-client';
+import ProgressButton from '../components/progress-button';
 
 const styles = {
     tagEditorContainer: {
@@ -19,9 +20,7 @@ const styles = {
 class Upload extends Component {
     // init state
     state = {
-        tags: [
-            { key: '', value: '', keyMsg: '', valueMsg: '' },
-        ],
+        tags: [],
         isDisabled: true,
     };
 
@@ -55,7 +54,7 @@ class Upload extends Component {
      * submits the new file for upload
      */
     onSubmit = this.onSubmit.bind(this); // bind this
-    onSubmit() {
+    async onSubmit() {
         // validate input
         let errors = [];
         this.state.tags.forEach(tag => {
@@ -65,6 +64,9 @@ class Upload extends Component {
             if (tag.valueMsg) {
                 errors.push(tag.valueMsg);
             }
+            if (tag.key === '' || tag.value === '') {
+                errors.push('No empty tags/values allowed');
+            }
         });
 
         if (errors.length !== 0) {
@@ -72,45 +74,43 @@ class Upload extends Component {
             return;
         }
 
-        // no errors. Async handle the submit.
-        (async () => {
-            // get current user
-            let user = await Auth.currentAuthenticatedUser();
+        // no errors, handle the submit.
+        // get current user
+        let user = await Auth.currentAuthenticatedUser();
 
-            // preprocess some data
-            const file = this.state.currentFile;
-            const groupName = await API.get('shacklebolt', '/group');
-            const filename = file.name;
-            const s3_key = groupName + '/' + file.name; // TODO: change this to a UUID at some point
-            let tags = this.state.tags.concat([
-                { key: 'filename', value: filename, },
-                { key: 'filetype', value: file.type, },
-                { key: 'created', value: Date.now().toString(), },
-                { key: 'author', value: user.pool.getClientId() },
-            ]);
-            
-            // store the file in s3
-            try {
-                await Storage.put(s3_key, file, {
-                    contentType: file.type
-                });
-                console.log('successfully stored file in s3 with key=' + s3_key);
-            } catch(err) {
-                console.log("error trying to store file in s3: ");
-                return err;
-            }
-
-            // index the tags in dynamo
-            tags.forEach(tag => {
-                let tagstring = JSON.stringify(tag);
-                this.saveTag(s3_key, tag).then(result => {
-                    console.log('successfully indexed file in dynamo with the tag: ' + tagstring);
-                }).catch(err => {
-                    console.log("could not index tag: " + tagstring);
-                    console.log(err);
-                });
+        // preprocess some data
+        const file = this.state.currentFile;
+        const groupName = await API.get('shacklebolt', '/group');
+        const filename = file.name;
+        const s3_key = groupName + '/' + file.name; // TODO: change this to a UUID at some point
+        let tags = this.state.tags.concat([
+            { key: 'filename', value: filename, },
+            { key: 'filetype', value: file.type, },
+            { key: 'created', value: Date.now().toString(), },
+            { key: 'author', value: user.pool.getClientId() },
+        ]);
+        
+        // store the file in s3
+        try {
+            await Storage.put(s3_key, file, {
+                contentType: file.type
             });
-        })().catch(err => console.log(err));
+            console.log('successfully stored file in s3 with key=' + s3_key);
+        } catch(err) {
+            console.log("error trying to store file in s3: ");
+            return err;
+        }
+
+        // index the tags in dynamo
+        tags.forEach(tag => {
+            let tagstring = JSON.stringify(tag);
+            this.saveTag(s3_key, tag).then(result => {
+                console.log('successfully indexed file in dynamo with the tag: ' + tagstring);
+            }).catch(err => {
+                console.log("could not index tag: " + tagstring);
+                console.log(err);
+            });
+        });
     }
 
     /**
@@ -192,14 +192,14 @@ class Upload extends Component {
                 
                 <br/>
                 <br/>
-                <Button 
+                <ProgressButton 
                     type='button' 
                     color="primary" 
                     variant='raised'
                     disabled={this.state.isDisabled}
-                    onClick={this.onSubmit}>
-                    Submit
-                </Button>
+                    onClick={this.onSubmit}
+                    buttonText="Submit"
+                />
             </form>
         );
     }
