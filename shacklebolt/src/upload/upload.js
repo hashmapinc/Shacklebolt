@@ -46,7 +46,7 @@ class Upload extends Component {
 
         // put item
         dynamodb.put(params, function (err, data) {
-            if (err) console.log(err, err.stack);
+            if (err) alert(err, err.stack);
         });
     }
 
