@@ -55,6 +55,15 @@ class Upload extends Component {
      */
     onSubmit = this.onSubmit.bind(this); // bind this
     async onSubmit() {
+        let myInit = {
+            queryStringParameters: {
+                coolGuy: 'Randy',
+                coolBoss: 'chris'
+            }
+        }
+        let re = await API.get('shacklebolt', '/search', myInit);
+        console.log(re);
+
         // validate input
         let errors = [];
         this.state.tags.forEach(tag => {
