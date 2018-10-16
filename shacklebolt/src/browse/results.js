@@ -3,17 +3,29 @@ import React, { Component } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { withStyles } from '@material-ui/core/styles';
 
-export default class Results extends Component {
+const styles = {
+    centerText: {
+        textAlign: 'center',
+    },
+    root: {
+        padding: '10vw',
+    },
+};
+
+class Results extends Component {
     render() {
         const resultItems = this.props.results.map((result) =>
-            <ListItem button>
-                <ListItemText primary={result} />
+            <ListItem button divider key={result} >
+                <ListItemText primary={result} className={this.props.classes.centerText} />
             </ListItem>
         );
 
         return (
-            <List>{resultItems}</List>
+            <List className={this.props.classes.root}>{resultItems}</List>
         );
     }
 }
+
+export default withStyles(styles)(Results);

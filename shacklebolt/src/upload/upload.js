@@ -30,7 +30,7 @@ class Upload extends Component {
      * @param {string} s3_key - path to the file in s3
      * @param {object} tag - object with key and value to save
      */
-    async saveTag(s3_key, tag) {
+    async indexTag(s3_key, tag) {
         // create put params
         const params = {
             'Item': {
@@ -39,6 +39,27 @@ class Upload extends Component {
                 "tag_value": tag.value,
             },
             'TableName': ENV.TAGS_TABLENAME,
+        };
+
+        // get client
+        const dynamodb = await getDynamoClient();
+
+        // put item
+        dynamodb.put(params, function (err, data) {
+            if (err) alert(err, err.stack);
+        });
+    }
+
+    /**
+     * saves the file index data in dynamo
+     * 
+     * @param {object} item - dynamo item to save with {s3_key} field
+     */
+    async indexFile(item) {
+        // create put params
+        const params = {
+            'Item': item,
+            'TableName': ENV.FILES_TABLENAME,
         };
 
         // get client
@@ -101,15 +122,27 @@ class Upload extends Component {
             return err;
         }
 
-        // index the tags in dynamo
+        // index the tags in dynamo and create file index item
+        let fileIndexItem = {'s3_key': s3_key};
         tags.forEach(tag => {
+            fileIndexItem[tag.key] = tag.value;
             let tagstring = JSON.stringify(tag);
-            this.saveTag(s3_key, tag).then(result => {
-                console.log('successfully indexed file in dynamo with the tag: ' + tagstring);
+            this.indexTag(s3_key, tag).then(result => {
+                console.log('successfully indexed tag in dynamo: ' + tagstring);
             }).catch(err => {
                 console.log("could not index tag: " + tagstring);
                 console.log(err);
             });
+        });
+
+        // index the file index item in dynamo
+        const file_string = JSON.stringify(fileIndexItem);
+        console.log("storing file index item: " + file_string);
+        this.indexFile(fileIndexItem).then(result => {
+            console.log('successfully indexed file in dynamo: ' + file_string);
+        }).catch(err => {
+            console.log("could not index file: " + file_string);
+            console.log(err);
         });
     }
 

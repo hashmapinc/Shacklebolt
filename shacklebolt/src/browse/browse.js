@@ -18,8 +18,7 @@ export default class Browse extends Component {
             }
         };
         let files = await API.get('shacklebolt', '/search', myInit);
-        console.log(files);
-        this.setState({results: files})
+        this.setState({results: files});
     }
 
     getMyFiles = this.getMyFiles.bind(this);
@@ -45,7 +44,7 @@ export default class Browse extends Component {
                     onClick={this.getMyFiles}
                     buttonText="Find my files"
                 />
-                <Results result={this.state.results}/>
+                <Results results={this.state.results}/>
             </div>
         );
     }
