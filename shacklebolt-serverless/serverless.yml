@@ -12,7 +12,8 @@ provider:
     team: innovation
     project: shacklebolt
   iamManagedPolicies: # Optional IAM Managed Policies, which allows to include the policies into IAM Role
-    - arn:aws:iam::660239660726:policy/shacklebolt.dynamo.tags.DEV.itemReadWrite # grant dynamo access
+    - arn:aws:iam::660239660726:policy/shacklebolt.dynamo.tags.DEV.itemReadWrite # grant dynamo tags access
+    - arn:aws:iam::660239660726:policy/shacklebolt.dynamo.files.DEV.itemReadWrite # grant dynamo files access
 
 functions:
   getGroupName:
@@ -32,6 +33,9 @@ functions:
   search:
     description: searches for matching files and returns all file metadata
     handler: search.handler
+    environment:
+      DYNAMO_TAGS_TABLE: shacklebolt.tags.DEV
+      DYNAMO_FILES_TABLE: shacklebolt.files.DEV
     events:
       - http:
           path: search

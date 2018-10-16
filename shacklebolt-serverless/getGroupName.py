@@ -1,18 +1,5 @@
-import json
+from util import getGroupName, buildResponse
 
 # return the groups that the user belongs to
 def handler(event, context):
-    group = ''
-    try:
-        group = event['requestContext']['authorizer']['claims']['cognito:groups']
-    except:
-        group = 'public'
-    
-    return {
-        "statusCode": 200,
-        "headers": {
-            'Access-Control-Allow-Origin':'*'
-        },
-        "body": group, 
-        "isBase64Encoded": True
-    }
+    return buildResponse(200, getGroupName(event))

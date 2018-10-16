@@ -55,15 +55,6 @@ class Upload extends Component {
      */
     onSubmit = this.onSubmit.bind(this); // bind this
     async onSubmit() {
-        let myInit = {
-            queryStringParameters: {
-                coolGuy: 'Randy',
-                coolBoss: 'chris'
-            }
-        }
-        let re = await API.get('shacklebolt', '/search', myInit);
-        console.log(re);
-
         // validate input
         let errors = [];
         this.state.tags.forEach(tag => {
@@ -86,6 +77,14 @@ class Upload extends Component {
         // no errors, handle the submit.
         // get current user
         let user = await Auth.currentAuthenticatedUser();
+
+        let myInit = {
+            queryStringParameters: {
+                author: user.pool.getClientId()
+            }
+        }
+        let re = await API.get('shacklebolt', '/search', myInit);
+        console.log(re);
 
         // preprocess some data
         const file = this.state.currentFile;
