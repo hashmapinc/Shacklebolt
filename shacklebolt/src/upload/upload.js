@@ -78,14 +78,6 @@ class Upload extends Component {
         // get current user
         let user = await Auth.currentAuthenticatedUser();
 
-        let myInit = {
-            queryStringParameters: {
-                author: user.pool.getClientId()
-            }
-        }
-        let re = await API.get('shacklebolt', '/search', myInit);
-        console.log(re);
-
         // preprocess some data
         const file = this.state.currentFile;
         const groupName = await API.get('shacklebolt', '/group');
