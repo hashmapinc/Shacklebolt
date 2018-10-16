@@ -41,10 +41,12 @@ def handler(event, context):
         s3Keys = []
         for tag in tags:
             queryResults = table.query(
-                KeyConditionExpression=Key('tag_key').eq(tag['key']) & Key('s3_key').begins_with(groupName),
+                KeyConditionExpression=Key('tag_key').eq(
+                    tag['key']) & Key('s3_key').begins_with(groupName),
                 FilterExpression=Attr('tag_value').contains(tag['val'])
             )
             [s3Keys.append(item['s3_key']) for item in queryResults['Items']]
+        logger.info(f"found matching keys: {s3Keys}")
 
         # get matching files from the files table
         logger.info("querying files table for full file index data")
@@ -55,6 +57,7 @@ def handler(event, context):
                 KeyConditionExpression=Key('s3_key').eq(s3Key)
             )
             [files.append(item['s3_key']) for item in queryResults['Items']]
+        logger.info(f"found matching files: {files}")
 
         return buildResponse(200, files)
     except Exception as e:
