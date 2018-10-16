@@ -15,10 +15,23 @@ const styles = {
 };
 
 class Results extends Component {
+    onClick = this.onClick.bind(this);
+    async onClick(index) {
+        alert("You selected the file: " + JSON.stringify(this.props.results[index]));
+    }
+
     render() {
-        const resultItems = this.props.results.map((result) =>
-            <ListItem button divider key={result} >
-                <ListItemText primary={result} className={this.props.classes.centerText} />
+        const resultItems = this.props.results.map((result, index) =>
+            <ListItem 
+                button 
+                divider 
+                key={index} 
+                onClick={(e) => this.onClick(index)}
+            >
+                <ListItemText 
+                    primary={result[this.props.textField]} 
+                    className={this.props.classes.centerText} 
+                />
             </ListItem>
         );
 

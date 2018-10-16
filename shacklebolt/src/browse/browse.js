@@ -44,7 +44,10 @@ export default class Browse extends Component {
                     onClick={this.getMyFiles}
                     buttonText="Find my files"
                 />
-                <Results results={this.state.results}/>
+                <Results 
+                    results={this.state.results} 
+                    textField={"filename"}
+                />
             </div>
         );
     }

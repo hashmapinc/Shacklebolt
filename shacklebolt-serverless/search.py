@@ -56,7 +56,7 @@ def handler(event, context):
             queryResults = table.query(
                 KeyConditionExpression=Key('s3_key').eq(s3Key)
             )
-            [files.append(item['s3_key']) for item in queryResults['Items']]
+            [files.append(item) for item in queryResults['Items']]
         logger.info(f"found matching files: {files}")
 
         return buildResponse(200, files)
