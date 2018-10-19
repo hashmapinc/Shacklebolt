@@ -3,14 +3,42 @@ service: shacklebolt-serverless
 provider:
   name: aws
   runtime: python3.6
-  profile: default
+  tags:
+    project: shacklebolt
+    team: innovation
+  profile: default # aws config provile to use from ~/.aws/config
+  apiName: shacklebolt
+  stackTags: # Optional CF stack tags
+    team: innovation
+    project: shacklebolt
+  iamManagedPolicies: # Optional IAM Managed Policies, which allows to include the policies into IAM Role
+    - arn:aws:iam::660239660726:policy/shacklebolt.dynamo.tags.DEV.itemReadWrite # grant dynamo tags access
+    - arn:aws:iam::660239660726:policy/shacklebolt.dynamo.files.DEV.itemReadWrite # grant dynamo files access
 
 functions:
   getGroupName:
+    description: gets a users active group name. If none, 'public' is returned
     handler: getGroupName.handler
     events:
       - http:
           path: group
+          method: get
+          authorizer:
+            name: authorizer
+            arn: arn:aws:cognito-idp:us-east-1:660239660726:userpool/us-east-1_FfH14h8MR
+          cors:
+            origin: '*'
+            maxAge: 86400
+
+  search:
+    description: searches for matching files and returns all file metadata
+    handler: search.handler
+    environment:
+      DYNAMO_TAGS_TABLE: shacklebolt.tags.DEV
+      DYNAMO_FILES_TABLE: shacklebolt.files.DEV
+    events:
+      - http:
+          path: search
           method: get
           authorizer:
             name: authorizer

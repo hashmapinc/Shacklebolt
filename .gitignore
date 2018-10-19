@@ -20,3 +20,6 @@ var/
 .serverless
 
 .DS_Store
+
+# vs code
+**/.vscode
