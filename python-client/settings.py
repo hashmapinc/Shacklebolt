@@ -1,0 +1,5 @@
+TAGS_TABLENAME = 'shacklebolt.tags.DEV'
+FILES_TABLENAME = 'shacklebolt.files.DEV'
+S3_BUCKETNAME = 'shacklebolt-storage'
+GROUP_NAME = 'Hashmap'
+REGION = 'us-east-1'
