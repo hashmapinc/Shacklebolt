@@ -47,12 +47,12 @@ def processEndpoint(endpoint):
     print(f"\tFINISHED PROCESSING {endpoint}...")
 
 
-def getFileList():
-    fileList = []
+def getFilepaths():
+    filepaths = []
     # recursively search with os.walk for files in the working dir
     for root, _, files in os.walk(WORK_DIR):
         for file in files:
-            fileList.append(os.path.join(root, file))
+            filepaths.append(os.path.join(root, file))
     
-    return fileList
+    return filepaths
 
