@@ -1,24 +1,6 @@
-from multiprocessing import Pool
 from zipfile import ZipFile
 import os, requests, shutil
 from settings import WORK_DIR
-
-def processEndpoints(endpoints):
-    # create working directory
-    print("CREATING WORK DIR...")
-    if not os.path.exists(WORK_DIR): os.mkdir(WORK_DIR) 
-
-    # parallelize the processing with a pool map of size=os.cpu_count()
-    print("STARTING MULTIPROCESS ENDPOINT PROCESSING...")
-    results = []
-    with Pool() as p:
-        results = p.map(processEndpoint, endpoints)
-    
-    failures = []
-    for failure in filter(None, results): # non-None values are fails
-        failures.append(failure)
-    
-    return failures
 
 def processEndpoint(endpoint):
     print(f"\tGETTING {endpoint}...")
@@ -56,14 +38,13 @@ def processEndpoint(endpoint):
     except Exception as e:
         return endpoint
     
-
-
 def getFilepaths():
     filepaths = []
     # recursively search with os.walk for files in the working dir
     for root, _, files in os.walk(WORK_DIR):
-        for file in files:
-            filepaths.append(os.path.join(root, file))
+        for file in files: 
+            # ignore 'dot' files
+            if not file.startswith('.'): filepaths.append(os.path.join(root, file))
     
     return filepaths
 

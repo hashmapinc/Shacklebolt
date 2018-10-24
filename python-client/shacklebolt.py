@@ -10,12 +10,14 @@ def extractShackleboltData(filepath):
     (_, filetype) = os.path.splitext(filepath)  # filetype = extension
     author = "PYTHON_CLIENT"
     created = int(time.time()*1000.0)
-    s3_key = f"public/{groupName}/{filename}-{created}"
+    path = os.path.relpath(filepath, settings.WORK_DIR)
+    s3_key = f"public/{groupName}/{path}"
     metadata = {
         'filename': filename,
         'filetype': filetype,
         'created': created,
         'author': author,
+        'path': path,
     }
 
     return (s3_key, metadata)
