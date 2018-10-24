@@ -1,9 +1,7 @@
 from multiprocessing import Pool
 from zipfile import ZipFile
-import os
-import requests
-
-WORK_DIR = './in-progress'
+import os, requests, shutil
+from settings import WORK_DIR
 
 def processEndpoints(endpoints):
     # create working directory
@@ -11,40 +9,53 @@ def processEndpoints(endpoints):
     if not os.path.exists(WORK_DIR): os.mkdir(WORK_DIR) 
 
     # parallelize the processing with a pool map of size=os.cpu_count()
-    print("STARTING PARALLEL ENDPOINT PROCESSING...")
+    print("STARTING MULTIPROCESS ENDPOINT PROCESSING...")
+    results = []
     with Pool() as p:
-        p.map(processEndpoint, endpoints)
+        results = p.map(processEndpoint, endpoints)
+    
+    failures = []
+    for failure in filter(None, results): # non-None values are fails
+        failures.append(failure)
+    
+    return failures
 
 def processEndpoint(endpoint):
     print(f"\tGETTING {endpoint}...")
-    # get file name
-    filename = f"{WORK_DIR}/{endpoint.split('/')[-1]}"
+    try:
+        # get file name
+        filename = f"{WORK_DIR}/{endpoint.split('/')[-1]}"
 
-    # download file
-    r = requests.get(endpoint, stream=True)
-    with open(filename, "wb") as f:
-        for chunk in r.iter_content(chunk_size=1024):
-            # writing one chunk at a time to file
-            if chunk:
-                f.write(chunk)
+        # download file
+        r = requests.get(endpoint, stream=True)
+        with open(filename, "wb") as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                # writing one chunk at a time to file
+                if chunk:
+                    f.write(chunk)
+
+        # extract zip if file is zip file
+        splitFilename = filename.split('.')
+        if splitFilename[-1] == 'zip':
+            print(f"\t\t EXTRACTING {filename}...")
+            # create a folder to unzip to
+            # recombine the filename without the .zip
+            dirName = '.'.join(splitFilename[:-1])
+            shutil.rmtree(dirName, ignore_errors=True) # clear the way for the dir
+            os.mkdir(dirName)
+
+            # unzip
+            zip = ZipFile(filename)
+            zip.extractall(path=dirName)
+            zip.close()
+
+            # delete the zip file
+            os.remove(filename)
+
+        return None
+    except Exception as e:
+        return endpoint
     
-    # extract zip if file is zip file
-    splitFilename = filename.split('.')
-    if splitFilename[-1] == 'zip':
-        print(f"\t\t EXTRACTING {filename}...")
-        # create a folder to unzip to
-        dirName = '.'.join(splitFilename[:-1]) # recombine the filename without the .zip
-        os.mkdir(dirName)
-
-        # unzip
-        zip = ZipFile(filename)
-        zip.extractall(path=dirName)
-        zip.close()
-
-        # delete the zip file
-        os.remove(filename)
-
-    print(f"\tFINISHED PROCESSING {endpoint}...")
 
 
 def getFilepaths():
