@@ -11,12 +11,12 @@ def extractShackleboltData(filepath):
     author = "PYTHON_CLIENT"
     created = int(time.time()*1000.0)
     s3_key = f"public/{groupName}/{filename}-{created}"
-    metadata = [
-        ('filename', filename),
-        ('filetype', filetype),
-        ('created', created),
-        ('author', author),
-    ]
+    metadata = {
+        'filename': filename,
+        'filetype': filetype,
+        'created': created,
+        'author': author,
+    }
 
     return (s3_key, metadata)
 
@@ -34,6 +34,12 @@ def indexTags(s3_key, metadata):
 
 def indexFile(s3_key, metadata):
     print(f"\t\tINDEXING FILE FOR {s3_key} INTO DYNAMO...")
+
+    # create table entry
+    metadata['s3_key'] = s3_key
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table(settings.FILES_TABLENAME)
+    table.put_item(Item=metadata)
 
 def processFiles(filepaths):
     # parallelize the processing with a pool map of size=os.cpu_count()
