@@ -32,11 +32,28 @@ def uploadToS3(filepath, s3_key):
 def indexTags(s3_key, metadata):
     print(f"\t\tINDEXING TAGS FOR {s3_key} INTO DYNAMO...")
 
+    # get table
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table(settings.TAGS_TABLENAME)
+
+    # batch put each tag into dynamo
+    with table.batch_writer() as batch:
+        for tag_key in metadata:
+            tag_value = metadata[tag_key]
+            item = {
+                'tag_key': tag_key,
+                's3_key': s3_key,
+                'tag_value': tag_value,
+            }
+            batch.put_item(Item=item)
+
 def indexFile(s3_key, metadata):
     print(f"\t\tINDEXING FILE FOR {s3_key} INTO DYNAMO...")
 
     # create table entry
     metadata['s3_key'] = s3_key
+
+    # upload to dynamo
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(settings.FILES_TABLENAME)
     table.put_item(Item=metadata)
