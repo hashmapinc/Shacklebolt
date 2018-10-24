@@ -1,7 +1,7 @@
 TAGS_TABLENAME = 'shacklebolt.tags.DEV'
 FILES_TABLENAME = 'shacklebolt.files.DEV'
 S3_BUCKETNAME = 'shacklebolt-storage'
-GROUP_NAME = 'Hashmap'
+GROUP_NAME = 'PYTHON-CLIENT'
 REGION = 'us-east-1'
 WORK_DIR = './in-progress'
 FILE_TODO_PATH = './file-todo.p'
