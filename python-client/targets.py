@@ -14,7 +14,6 @@ RAW_ENDPOINTS = [
 
 TEST_ENDPOINTS = [
     r"https://dataplatformblvolve.blob.core.windows.net/pub/Volve_Production_data.zip",
-    r"https://dataplatformblvolve.blob.core.windows.net/pub/Volve_Seismic_VSP.zip",
 ]
 
 ENDPOINTS = TEST_ENDPOINTS
