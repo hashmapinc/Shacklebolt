@@ -1,0 +1,5 @@
+TAGS_TABLENAME = 'shacklebolt.tags.DEV'
+FILES_TABLENAME = 'shacklebolt.files.DEV'
+S3_BUCKETNAME = 'shacklebolt-storage'
+GROUP_NAME = 'PYTHON-CLIENT'
+WORK_DIR = './in-progress'
