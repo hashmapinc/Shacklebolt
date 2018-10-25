@@ -186,6 +186,23 @@ class Upload extends Component {
     }
 
     /**
+     * when any tag is removed from the editor, this is called to update state
+     * 
+     * @param {Number} index - index in the tags array to remove the tag entry
+     */
+    onTagRemove = this.onTagRemove.bind(this);
+    onTagRemove(index) {
+        this.setState((prev_state, prev_props) => {
+            let tags = prev_state.tags;
+
+            // remove 1 element from index=index
+            tags.splice(index, 1); // modifies tags in place
+
+            return { tags: tags };
+        });
+    }
+
+    /**
      * adds a new tag entry into the tags array in state
      */
     addTag = this.addTag.bind(this);
@@ -211,6 +228,7 @@ class Upload extends Component {
                 <div className={this.props.classes.tagEditorContainer}>
                     <TagEditor
                         onChange={this.onTagChange}
+                        onRemove={this.onTagRemove}
                         tags={this.state.tags}
                     />
                     <br />

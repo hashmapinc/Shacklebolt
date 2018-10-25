@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import CloseIcon from '@material-ui/icons/Close';
+import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 
 const RESERVED_KEYS = [
@@ -19,12 +22,10 @@ const styles = {
     container: {
     },
     key: {
-        width: '50%',
-        padding: '10px',
     },
     value: {
-        width: '50%',
-        padding: '10px',
+    },
+    fab: {
     },
 };
 
@@ -77,26 +78,47 @@ class Tag extends Component {
         this.validateValue(newValue);
     }
 
+    onRemove = this.onRemove.bind(this);
+    onRemove(e) {
+        this.props.onRemove(this.props.list_index)
+    }
+
     render() {
         return (
             <div className={this.props.classes.container}>
-                <TextField
-                    error={this.props.keyMsg !== ''}
-                    label="Tag Key" 
-                    value={this.props.tagKey}
-                    variant="outlined"
-                    className={this.props.classes.key}
-                    onChange={this.onKeyUpdate}
-                />
-                <TextField
-                    label="Tag Value"
-                    error={this.props.valueMsg !== ''}
-                    value={this.props.tagValue}
-                    variant="outlined"
-                    className={this.props.classes.value}
-                    onChange={this.onValueUpdate}
-                />
-                
+                <Grid container spacing={8}>
+                    <Grid item xs={5}>
+                        <TextField
+                            error={this.props.keyMsg !== ''}
+                            label="Tag Key"
+                            value={this.props.tagKey}
+                            variant="outlined"
+                            className={this.props.classes.key}
+                            onChange={this.onKeyUpdate}
+                        />
+                    </Grid>
+                    
+                    <Grid item xs={5}>
+                        <TextField
+                            label="Tag Value"
+                            error={this.props.valueMsg !== ''}
+                            value={this.props.tagValue}
+                            variant="outlined"
+                            className={this.props.classes.value}
+                            onChange={this.onValueUpdate}
+                        />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Button 
+                            variant="fab" 
+                            aria-label="Remove" 
+                            className={this.props.classes.fab}
+                            onClick={this.onRemove}
+                        >
+                            <CloseIcon />
+                        </Button>
+                    </Grid>
+                </Grid>
             </div>
         );
     }
