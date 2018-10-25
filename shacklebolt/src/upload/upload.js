@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import ENV from '../environment-variables';
 import FileInput from '../components/file-input';
-import TagEditor from './tag-editor';
+import TagEditor from '../components/tags/tag-editor';
 import {getDynamoClient} from '../storage/dynamo-client';
 import ProgressButton from '../components/progress-button';
 
@@ -16,6 +16,13 @@ const styles = {
         paddingRight: '20vw',
     },
 };
+
+const RESERVED_KEYS = [
+    'filename',
+    'filetype',
+    'created',
+    'author',
+];
 
 class Upload extends Component {
     // init state
@@ -230,6 +237,7 @@ class Upload extends Component {
                         onChange={this.onTagChange}
                         onRemove={this.onTagRemove}
                         tags={this.state.tags}
+                        reservedKeys={RESERVED_KEYS}
                     />
                     <br />
                     <Button

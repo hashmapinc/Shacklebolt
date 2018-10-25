@@ -14,6 +14,7 @@ export default class TagEditor extends Component {
                 list_index={index}
                 onChange={this.props.onChange}
                 onRemove={this.props.onRemove}
+                reservedKeys={this.props.reservedKeys}
             />)
         });
         return tags;

@@ -6,13 +6,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 
-const RESERVED_KEYS = [
-    'filename',
-    'filetype',
-    'created',
-    'author',
-];
-
 const isAlphaNumeric = input => {
     let isJustSpaces = input.match(/^[ ]+$/i) !== null
     return !isJustSpaces && input.match(/^[a-z0-9 ]+$/i) !== null;
@@ -43,7 +36,7 @@ class Tag extends Component {
             return false;
         }
         
-        if (RESERVED_KEYS.includes(tag_key.toLowerCase())) {
+        if (this.props.reservedKeys.includes(tag_key.toLowerCase())) {
             this.props.onChange(this.props.list_index, { keyMsg: tag_key + ' is a reserved keyword' });
             return false;
         }
