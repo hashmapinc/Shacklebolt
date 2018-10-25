@@ -13,7 +13,6 @@ const styles = {
         textAlign: 'center',
     },
     root: {
-        padding: '10vw',
     },
 };
 
