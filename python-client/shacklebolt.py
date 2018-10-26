@@ -11,7 +11,7 @@ def extractShackleboltData(filepath):
     author = "PYTHON_CLIENT"
     created = int(time.time()*1000.0)
     path = os.path.relpath(filepath, settings.WORK_DIR)
-    s3_key = f"public/{groupName}/{path}"
+    s3_key = f"{groupName}/{path}"
     metadata = {
         'filename': filename,
         'filetype': filetype,
@@ -29,7 +29,7 @@ def uploadToS3(filepath, s3_key):
 
     # Uploads the given file using a managed uploader, which will split up large
     # files automatically and upload parts in parallel.
-    s3.upload_file(filepath, settings.S3_BUCKETNAME, s3_key)
+    s3.upload_file(filepath, settings.S3_BUCKETNAME, f"public/{s3_key}") # the "public" portion is for AWS Amplify storage compatibility for the web client. This will not be the case forever, but is good for now. Complain to Randy Pitcher about how stupid this is.
 
 def indexTags(s3_key, metadata):
     print(f"\t\tINDEXING TAGS FOR {s3_key} INTO DYNAMO...")
