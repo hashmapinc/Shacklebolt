@@ -28,13 +28,16 @@ class Browse extends Component {
     };
 
     search = this.search.bind(this);
-    async search(tag) {
+    async search(tags) {
+        let queryStringParams = {};
+        tags.forEach(tag => {
+            queryStringParams[tag.key] = tag.value;
+        });
         let myInit = {
-            queryStringParameters: {
-                [tag.key]: tag.value
-            }
+            queryStringParameters: queryStringParams
         };
         let files = await API.get('shacklebolt', '/search', myInit);
+        console.log("Found files: " + JSON.stringify(files))
         this.setState({results: files});
     }
 
@@ -44,20 +47,19 @@ class Browse extends Component {
         let user = await Auth.currentAuthenticatedUser();
 
         // create tag
-        const tag =  { key: 'author', value: user.pool.getClientId() };
+        const tags =  [{ key: 'author', value: user.username }];
 
         // query tags (results are updated in search)
-        this.search(tag);
+        this.search(tags);
     }
 
     searchByTag = this.searchByTag.bind(this);
     async searchByTag(e) {
         // create tag
         let tags = this.state.tags;
-        let tag = tags[0];
 
         // query tags (results are updated in search)
-        this.search(tag);
+        this.search(tags);
     }
 
     /**
@@ -104,6 +106,24 @@ class Browse extends Component {
             return { tags: tags };
         });
     }
+
+    /**
+     * add an empty tag to the tags array
+     */
+    addTag = this.addTag.bind(this);
+    addTag() {
+        this.setState((prev_state, prev_props) => {
+            let tags = prev_state.tags;
+            tags.push({
+                'key': '',
+                'value': '',
+                'keyMsg': '',
+                'keyMsg': '',
+            })
+
+            return { tags: tags };
+        });
+    }
     
     render() {
         return (
@@ -114,29 +134,16 @@ class Browse extends Component {
                     justify="center"
                     alignItems="center"
                 >
-                        <Grid item xs={12}>
-                            <ProgressButton
-                                className={this.props.classes.buttons}
-                                type='button'
-                                color="primary"
-                                variant='raised'
-                                onClick={this.getMyFiles}
-                                buttonText="Find my files"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Button
-                                className={this.props.classes.buttons}
-                                type='button'
-                                color="primary"
-                                variant='raised'
-                                onClick={e => this.setState({tags: [{
-                                    key:'', value: '', keyMsg: '', valueMsg: ''
-                                }]})}
-                                >
-                                Search by tag.
-                            </Button>
-                        </Grid>
+                    <Grid item xs={12}>
+                        <ProgressButton
+                            className={this.props.classes.buttons}
+                            type='button'
+                            color="primary"
+                            variant='raised'
+                            onClick={this.getMyFiles}
+                            buttonText="Find my files"
+                        />
+                    </Grid>
                     <Grid item xs={12}>
                         <TagEditor
                             onChange={this.onTagChange}
@@ -144,6 +151,16 @@ class Browse extends Component {
                             tags={this.state.tags}
                             reservedKeys={[]}
                         />
+                        <Button
+                            hidden={this.state.tags.length === 0}
+                            className={this.props.classes.buttons}
+                            type='button'
+                            color="primary"
+                            variant='raised'
+                            onClick={this.addTag}
+                            >
+                            Add tag filter
+                        </Button>
                     </Grid>
                     <Grid item xs={12}>
                         <ProgressButton

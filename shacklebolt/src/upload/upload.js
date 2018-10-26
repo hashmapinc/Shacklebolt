@@ -115,7 +115,7 @@ class Upload extends Component {
             { key: 'filename', value: filename, },
             { key: 'filetype', value: file.type, },
             { key: 'created', value: Date.now().toString(), },
-            { key: 'author', value: user.pool.getClientId() },
+            { key: 'author', value: user.username },
         ]);
         
         // store the file in s3
