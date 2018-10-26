@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import ENV from '../environment-variables';
 import FileInput from '../components/file-input';
-import TagEditor from './tag-editor';
+import TagEditor from '../components/tags/tag-editor';
 import {getDynamoClient} from '../storage/dynamo-client';
 import ProgressButton from '../components/progress-button';
 
@@ -16,6 +16,13 @@ const styles = {
         paddingRight: '20vw',
     },
 };
+
+const RESERVED_KEYS = [
+    'filename',
+    'filetype',
+    'created',
+    'author',
+];
 
 class Upload extends Component {
     // init state
@@ -108,7 +115,7 @@ class Upload extends Component {
             { key: 'filename', value: filename, },
             { key: 'filetype', value: file.type, },
             { key: 'created', value: Date.now().toString(), },
-            { key: 'author', value: user.pool.getClientId() },
+            { key: 'author', value: user.username },
         ]);
         
         // store the file in s3
@@ -186,6 +193,23 @@ class Upload extends Component {
     }
 
     /**
+     * when any tag is removed from the editor, this is called to update state
+     * 
+     * @param {Number} index - index in the tags array to remove the tag entry
+     */
+    onTagRemove = this.onTagRemove.bind(this);
+    onTagRemove(index) {
+        this.setState((prev_state, prev_props) => {
+            let tags = prev_state.tags;
+
+            // remove 1 element from index=index
+            tags.splice(index, 1); // modifies tags in place
+
+            return { tags: tags };
+        });
+    }
+
+    /**
      * adds a new tag entry into the tags array in state
      */
     addTag = this.addTag.bind(this);
@@ -211,7 +235,9 @@ class Upload extends Component {
                 <div className={this.props.classes.tagEditorContainer}>
                     <TagEditor
                         onChange={this.onTagChange}
+                        onRemove={this.onTagRemove}
                         tags={this.state.tags}
+                        reservedKeys={RESERVED_KEYS}
                     />
                     <br />
                     <Button

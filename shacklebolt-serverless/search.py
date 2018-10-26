@@ -3,6 +3,7 @@ from boto3.dynamodb.conditions import Key, Attr
 
 import logging
 import os
+from functools import reduce
 
 from util import buildResponse, getGroupName
 
@@ -38,14 +39,20 @@ def handler(event, context):
         # get matching keys from the tags table
         logger.info("querying tags table for matching s3Keys")
         table = dynamodb.Table(TAGS_TABLE)
-        s3Keys = []
+        tag_matches = []
         for tag in tags:
+            matches = set()
             queryResults = table.query(
-                KeyConditionExpression=Key('tag_key').eq(
-                    tag['key']) & Key('s3_key').begins_with(groupName),
+                KeyConditionExpression=Key('tag_key').eq(tag['key']) & Key('s3_key').begins_with(groupName),
                 FilterExpression=Attr('tag_value').contains(tag['val'])
             )
-            [s3Keys.append(item['s3_key']) for item in queryResults['Items']]
+            [matches.add(item['s3_key']) for item in queryResults['Items']]
+            tag_matches.append(matches)
+            logger.info(f"found {len(matches)} matches for tag:{tag}")
+        
+        # reduce to s3keys matched by all tag filters
+        s3Keys = reduce(lambda x,y: x & y, tag_matches) # use intersection of all sets to get s3Keys. See python sets for more info on intersection
+
         logger.info(f"found matching keys: {s3Keys}")
 
         # get matching files from the files table

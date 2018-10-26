@@ -13,6 +13,8 @@ export default class TagEditor extends Component {
                 valueMsg={tag.valueMsg}
                 list_index={index}
                 onChange={this.props.onChange}
+                onRemove={this.props.onRemove}
+                reservedKeys={this.props.reservedKeys}
             />)
         });
         return tags;

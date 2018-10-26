@@ -1,4 +1,9 @@
-import json
+import json, decimal
+
+def decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        return float(obj)
+    raise TypeError
 
 def buildResponse(statusCode, body):
     return {
@@ -6,7 +11,7 @@ def buildResponse(statusCode, body):
         "headers": {
             'Access-Control-Allow-Origin': '*'
         },
-        "body": json.dumps(body),
+        "body": json.dumps(body, default=decimal_default),
         "isBase64Encoded": True
     }
 
