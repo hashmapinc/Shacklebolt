@@ -24,6 +24,14 @@ const RESERVED_KEYS = [
     'author',
 ];
 
+function getGroupnameFromUser(user) {
+    try {
+        return user.signInUserSession.idToken.payload["cognito:groups"][0];
+    } catch (error) {
+        return "public";
+    }
+}
+
 class Upload extends Component {
     // init state
     state = {
@@ -108,7 +116,7 @@ class Upload extends Component {
 
         // preprocess some data
         const file = this.state.currentFile;
-        const groupName = await API.get('shacklebolt', '/group'); // access this from the user object
+        const groupName = getGroupnameFromUser(user); // access this from the user object
         const filename = file.name;
         const s3_key = groupName + '/' + file.name; // TODO: change this to a UUID at some point
         let tags = this.state.tags.concat([
