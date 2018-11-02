@@ -1,0 +1,14 @@
+Resources:
+  FilesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.filesTable.name}
+      AttributeDefinitions:
+        - AttributeName: s3_key
+          AttributeType: S
+      KeySchema:
+        - AttributeName: s3_key
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: ${self:custom.filesTable.throughput}
+        WriteCapacityUnits: ${self:custom.filesTable.throughput}

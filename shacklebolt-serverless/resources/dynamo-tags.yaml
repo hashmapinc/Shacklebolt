@@ -1,0 +1,18 @@
+Resources:
+  TagsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.tagsTable.name}
+      AttributeDefinitions:
+        - AttributeName: tag_key
+          AttributeType: S
+        - AttributeName: tag_value
+          AttributeType: S
+      KeySchema:
+        - AttributeName: tag_key
+          KeyType: HASH
+        - AttributeName: tag_value
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: ${self:custom.tagsTable.throughput}
+        WriteCapacityUnits: ${self:custom.tagsTable.throughput}

@@ -1,5 +1,19 @@
 service: shacklebolt-serverless 
 
+# define custom variables 
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  dynamoThroughputs:
+    dev: 1
+    default: 1
+  tagsTable:
+    name: shacklebolt-tags-${self:custom.stage}
+    throughput: ${self:custom.dynamoThroughputs.${self:custom.stage}, self:custom.dynamoThroughputs.default}
+  filesTable:
+    name: shacklebolt-files-${self:custom.stage}
+    throughput: ${self:custom.dynamoThroughputs.${self:custom.stage}, self:custom.dynamoThroughputs.default}
+
+# define global service values 
 provider:
   name: aws
   runtime: python3.6
@@ -11,25 +25,25 @@ provider:
   stackTags: # Optional CF stack tags
     team: innovation
     project: shacklebolt
-  iamManagedPolicies: # Optional IAM Managed Policies, which allows to include the policies into IAM Role
-    - arn:aws:iam::660239660726:policy/shacklebolt.dynamo.tags.DEV.itemReadWrite # grant dynamo tags access
-    - arn:aws:iam::660239660726:policy/shacklebolt.dynamo.files.DEV.itemReadWrite # grant dynamo files access
+  environment:
+    DYNAMO_TAGS_TABLE: ${self:custom.tagsTable.name}
+    DYNAMO_FILES_TABLE: ${self:custom.filesTable.name}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "Fn::GetAtt": [ FilesTable, Arn ]
+        - "Fn::GetAtt": [ TagsTable, Arn ]
 
+# define individual functions
 functions:
-  getGroupName:
-    description: gets a users active group name. If none, 'public' is returned
-    handler: getGroupName.handler
-    events:
-      - http:
-          path: group
-          method: get
-          authorizer:
-            name: authorizer
-            arn: arn:aws:cognito-idp:us-east-1:660239660726:userpool/us-east-1_FfH14h8MR
-          cors:
-            origin: '*'
-            maxAge: 86400
-
   search:
     description: searches for matching files and returns all file metadata
     handler: search.handler
@@ -46,3 +60,9 @@ functions:
           cors:
             origin: '*'
             maxAge: 86400
+
+# Create resources with separate CloudFormation templates
+resources:
+  # DynamoDB
+  - ${file(./resources/dynamo-tags.yaml)}
+  - ${file(./resources/dynamo-files.yaml)}
