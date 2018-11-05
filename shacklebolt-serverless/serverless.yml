@@ -12,6 +12,8 @@ custom:
   filesTable:
     name: shacklebolt-files-${self:custom.stage}
     throughput: ${self:custom.dynamoThroughputs.${self:custom.stage}, self:custom.dynamoThroughputs.default}
+  s3Storage:
+    name: shacklebolt-storage-${self:custom.stage}
 
 # define global service values 
 provider:
@@ -41,15 +43,33 @@ provider:
       Resource:
         - "Fn::GetAtt": [ FilesTable, Arn ]
         - "Fn::GetAtt": [ TagsTable, Arn ]
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:ListBucket
+        - s3:PutObject
+      Resource:
+        - "Fn::GetAtt": [ StorageBucket, Arn ]
 
 # define individual functions
 functions:
+  index:
+    description: indexes files and returns a signed s3 url for uploading the actual file. URL is good for 1 hour
+    handler: index.handler
+    events:
+      - http:
+          path: index
+          method: post
+          authorizer:
+            name: authorizer
+            arn: arn:aws:cognito-idp:us-east-1:660239660726:userpool/us-east-1_FfH14h8MR
+          cors:
+            origin: '*'
+            maxAge: 86400
+
   search:
     description: searches for matching files and returns all file metadata
     handler: search.handler
-    environment:
-      DYNAMO_TAGS_TABLE: shacklebolt.tags.DEV
-      DYNAMO_FILES_TABLE: shacklebolt.files.DEV
     events:
       - http:
           path: search
@@ -66,3 +86,5 @@ resources:
   # DynamoDB
   - ${file(./resources/dynamo-tags.yaml)}
   - ${file(./resources/dynamo-files.yaml)}
+  # S3
+  - ${file(./resources/s3-storage.yaml)}
