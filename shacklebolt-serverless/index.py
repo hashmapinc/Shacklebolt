@@ -90,16 +90,16 @@ def handler(event, context):
         logger.error(msg)
         return util.buildResponse(500, msg)
 
-    # get a presignedPOST url for client-side file upload to s3
+    # get a presigned url for client-side file upload to s3
     try:
-        # Generate the POST
+        # Generate the url
         s3 = boto3.client('s3')
-        presignedPOST = s3.generate_presigned_post(
-            Bucket=os.environ["S3_STORAGE_BUCKETNAME"],
-            Key=s3_key
-        )
-        return util.buildResponse(200, presignedPOST)
+
+        presignedPost = s3.generate_presigned_post(
+            Bucket=os.environ["S3_STORAGE_BUCKETNAME"], Key=s3_key)
+
+        return util.buildResponse(200, presignedPost)
     except Exception as e:
-        msg = f"error generating presignedPOST: {e}"
+        msg = f"error generating presigned url: {e}"
         logger.error(msg)
         return util.buildResponse(500, msg)

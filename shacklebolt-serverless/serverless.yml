@@ -51,7 +51,8 @@ provider:
         - s3:ListBucket
         - s3:PutObject
       Resource:
-        - "Fn::GetAtt": [ StorageBucket, Arn ]
+        - "Fn::Join" : [ "", [ "Fn::GetAtt": [ StorageBucket, Arn ], "/*"] ]
+          
 
 # define individual functions
 functions:

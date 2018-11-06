@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {API} from 'aws-amplify';
+import axios from 'axios';
 
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
@@ -105,14 +106,32 @@ class Upload extends Component {
             return;
         }
 
-        // no errors, handle the submit.
+        // no errors, get presigned url.
+        let file = this.state.currentFile;
         let body = {
-            'filename': this.state.currentFile.name, 
-            'filetype': this.state.currentFile.type, 
+            'filename': file.name, 
+            'filetype': file.type, 
             'tags': tags,
         };
-        let presignedPOST = await API.post('shacklebolt', '/index', {'body': body});
-        console.log(presignedPOST);
+        let presignedPost = await API.post('shacklebolt', '/index', {'body': body});
+        console.log(presignedPost);
+
+        // construct form
+        let formData = new FormData();
+        let fields = presignedPost.fields;
+        Object.keys(fields).forEach(key => formData.append(key, fields[key]));
+        formData.append('file', file);
+
+        // post file
+        axios.post(presignedPost.url, formData)
+            .then(function (res) {
+                console.log("Successfully uploaded to s3...");
+            })
+            .catch(function (err) {
+                console.log("Error uploading to s3: " + err.response.data);
+            });
+
+
     }
 
     /**
