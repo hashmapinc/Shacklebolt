@@ -7,6 +7,14 @@ import util
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+RESERVED_KEYS = [
+    'filename',
+    'filetype',
+    'dateCreated',
+    'author',
+    'uploadValidated'
+]
+
 def handler(event, context):
     # parse post information
     body = {}
@@ -20,6 +28,10 @@ def handler(event, context):
         timeCreated = datetime.datetime.utcnow()
         s3_filename = f"{timeCreated.timestamp()}--{uuid.uuid4()}--{body['filename']}"
         s3_key = f"{groupName}/{s3_filename}"
+
+        # validate the tags
+        for tag in body['tags']:
+            if tag['key'] in RESERVED_KEYS: raise Exception(f"{tag['key']} is a reserved tag key.")
     except Exception as e:
         msg = f"error parsing post body: {e}"
         logger.error(msg)
