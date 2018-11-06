@@ -114,7 +114,6 @@ class Upload extends Component {
             'tags': tags,
         };
         let presignedPost = await API.post('shacklebolt', '/index', {'body': body});
-        console.log(presignedPost);
 
         // construct form
         let formData = new FormData();
@@ -130,8 +129,6 @@ class Upload extends Component {
             .catch(function (err) {
                 console.log("Error uploading to s3: " + err.response.data);
             });
-
-
     }
 
     /**

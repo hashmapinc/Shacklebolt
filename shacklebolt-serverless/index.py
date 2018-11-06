@@ -64,7 +64,7 @@ def handler(event, context):
                 item = {
                     'tag_key': tag['key'],
                     's3_key': s3_key,
-                    'tag_value': str(tag['value']),
+                    'tag_value': tag['value'],
                 }
                 batch.put_item(Item=item)
     except Exception as e:
