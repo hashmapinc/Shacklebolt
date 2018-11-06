@@ -20,8 +20,9 @@ const styles = {
 const RESERVED_KEYS = [
     'filename',
     'filetype',
-    'created',
+    'dateCreated',
     'author',
+    'uploadValidated'
 ];
 
 class Upload extends Component {

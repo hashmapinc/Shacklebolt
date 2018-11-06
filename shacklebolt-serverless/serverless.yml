@@ -30,6 +30,7 @@ provider:
   environment:
     DYNAMO_TAGS_TABLE: ${self:custom.tagsTable.name}
     DYNAMO_FILES_TABLE: ${self:custom.filesTable.name}
+    S3_STORAGE_BUCKETNAME: ${self:custom.s3Storage.name}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -40,6 +41,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
       Resource:
         - "Fn::GetAtt": [ FilesTable, Arn ]
         - "Fn::GetAtt": [ TagsTable, Arn ]
