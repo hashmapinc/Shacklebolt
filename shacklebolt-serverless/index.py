@@ -20,17 +20,21 @@ def handler(event, context):
         logger.error(msg)
         return util.buildResponse(500, msg)
 
-    # harvest metadata
+    # harvest metadata as tags
     try:
-        timeCreated = time.time()
+        # create a s3_key for this file
         groupName = util.getGroupName(event)
-        author = util.getUsername(event)
-        filename = ""
-        filetype = ""
-        s3_filename = f"{timeCreated}.{uuid.uuid4()}.jpg"
+        timeCreated = time.time()
+        s3_filename = f"{timeCreated}--{uuid.uuid4()}--{body['filename']}"
         s3_key = f"{groupName}/{s3_filename}"
-        res = [timeCreated, groupName, author, filename, filetype, s3_filename, s3_key]
-        return util.buildResponse(200, f"{res}")
+
+        # append all metadata harvested to the tags array along with exising user-defined tags
+        tags = body["tags"]
+        tags.append({'key': 'created', 'value': timeCreated})
+        tags.append({'key': 'filename', 'value': body['filename']})
+        tags.append({'key': 'filetype', 'value': body['filetype']})
+        tags.append({'key': 'author', 'value': util.getUsername(event)})
+        return util.buildResponse(200, f"{tags}")
     except Exception as e:
         msg = f"error harvesting metadata: {e}"
         logger.error(msg)

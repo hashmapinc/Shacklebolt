@@ -85,6 +85,7 @@ class Upload extends Component {
     async onSubmit() {
         // validate input
         let errors = [];
+        let tags = [];
         this.state.tags.forEach(tag => {
             if (tag.keyMsg) {
                 errors.push(tag.keyMsg);
@@ -95,6 +96,7 @@ class Upload extends Component {
             if (tag.key === '' || tag.value === '') {
                 errors.push('No empty tags/values allowed');
             }
+            tags.push({'key': tag.key, 'value': tag.value});
         });
 
         if (errors.length !== 0) {
@@ -103,10 +105,11 @@ class Upload extends Component {
         }
 
         // no errors, handle the submit.
-        const file = this.state.currentFile;
-
-        // call the index endpoint
-        let body = {'file': file, 'tags': this.state.tags};
+        let body = {
+            'filename': this.state.currentFile.name, 
+            'filetype': this.state.currentFile.type, 
+            'tags': tags,
+        };
         let presignedPOST = await API.post('shacklebolt', '/index', {'body': body});
         console.log(presignedPOST);
     }
