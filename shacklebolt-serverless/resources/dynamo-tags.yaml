@@ -6,12 +6,12 @@ Resources:
       AttributeDefinitions:
         - AttributeName: tag_key
           AttributeType: S
-        - AttributeName: tag_value
+        - AttributeName: s3_key
           AttributeType: S
       KeySchema:
         - AttributeName: tag_key
           KeyType: HASH
-        - AttributeName: tag_value
+        - AttributeName: s3_key
           KeyType: RANGE
       ProvisionedThroughput:
         ReadCapacityUnits: ${self:custom.tagsTable.throughput}

@@ -54,20 +54,5 @@
 		}
 	},
 	"function": {},
-	"storage": {
-		"shackleboltS3": {
-			"service": "S3",
-			"providerPlugin": "awscloudformation",
-			"providerMetadata": {
-				"s3TemplateURL": "https://s3.amazonaws.com/shacklebolt-20180917130749-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
-				"logicalId": "storageshackleboltS3"
-			},
-			"lastPushTimeStamp": "2018-09-23T19:54:47.092Z",
-			"output": {
-				"BucketName": "shacklebolt-storage",
-				"Region": "us-east-1"
-			},
-			"lastPushDirHash": "fUKchW/KAwMgsuykRuLgU7+mLR4="
-		}
-	}
+	"storage": {}
 }

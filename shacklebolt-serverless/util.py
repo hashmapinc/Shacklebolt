@@ -20,3 +20,6 @@ def getGroupName(event):
         return event['requestContext']['authorizer']['claims']['cognito:groups']
     except:
         return 'public'
+
+def getUsername(event):
+    return event['requestContext']['authorizer']['claims']['cognito:username']
