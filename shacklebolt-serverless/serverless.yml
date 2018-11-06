@@ -63,9 +63,7 @@ functions:
           authorizer:
             name: authorizer
             arn: arn:aws:cognito-idp:us-east-1:660239660726:userpool/us-east-1_FfH14h8MR
-          cors:
-            origin: '*'
-            maxAge: 86400
+          cors: true
 
   search:
     description: searches for matching files and returns all file metadata

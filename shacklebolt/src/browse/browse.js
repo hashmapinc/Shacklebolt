@@ -118,7 +118,7 @@ class Browse extends Component {
                 'key': '',
                 'value': '',
                 'keyMsg': '',
-                'keyMsg': '',
+                'valueMsg': '',
             })
 
             return { tags: tags };

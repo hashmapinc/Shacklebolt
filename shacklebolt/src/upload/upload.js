@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Storage, Auth, API} from 'aws-amplify';
+import {API} from 'aws-amplify';
 
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
@@ -23,14 +23,6 @@ const RESERVED_KEYS = [
     'created',
     'author',
 ];
-
-function getGroupnameFromUser(user) {
-    try {
-        return user.signInUserSession.idToken.payload["cognito:groups"][0];
-    } catch (error) {
-        return "public";
-    }
-}
 
 class Upload extends Component {
     // init state
@@ -111,54 +103,12 @@ class Upload extends Component {
         }
 
         // no errors, handle the submit.
-        // get current user
-        let user = await Auth.currentAuthenticatedUser();
-
-        // preprocess some data
         const file = this.state.currentFile;
-        const groupName = getGroupnameFromUser(user); // access this from the user object
-        const filename = file.name;
-        const s3_key = groupName + '/' + file.name; // TODO: change this to a UUID at some point
-        let tags = this.state.tags.concat([
-            { key: 'filename', value: filename, },
-            { key: 'filetype', value: file.type, },
-            { key: 'created', value: Date.now().toString(), },
-            { key: 'author', value: user.username },
-        ]);
-        
-        // store the file in s3
-        try {
-            await Storage.put(s3_key, file, {
-                contentType: file.type
-            });
-            console.log('successfully stored file in s3 with key=' + s3_key);
-        } catch(err) {
-            console.log("error trying to store file in s3: ");
-            return err;
-        }
 
-        // index the tags in dynamo and create file index item
-        let fileIndexItem = {'s3_key': s3_key};
-        tags.forEach(tag => {
-            fileIndexItem[tag.key] = tag.value;
-            let tagstring = JSON.stringify(tag);
-            this.indexTag(s3_key, tag).then(result => {
-                console.log('successfully indexed tag in dynamo: ' + tagstring);
-            }).catch(err => {
-                console.log("could not index tag: " + tagstring);
-                console.log(err);
-            });
-        });
-
-        // index the file index item in dynamo
-        const file_string = JSON.stringify(fileIndexItem);
-        console.log("storing file index item: " + file_string);
-        this.indexFile(fileIndexItem).then(result => {
-            console.log('successfully indexed file in dynamo: ' + file_string);
-        }).catch(err => {
-            console.log("could not index file: " + file_string);
-            console.log(err);
-        });
+        // call the index endpoint
+        let body = {'file': file, 'tags': this.state.tags};
+        let presignedPOST = await API.post('shacklebolt', '/index', {'body': body});
+        console.log(presignedPOST);
     }
 
     /**
